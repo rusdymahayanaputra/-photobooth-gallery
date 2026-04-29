@@ -1,0 +1,121 @@
+// ================================================================
+// GOOGLE APPS SCRIPT — Photo Booth Backend
+// Paste kode ini di Google Apps Script (script.google.com)
+// ================================================================
+
+const SHEET_NAME = "Events";
+
+function doGet(e) {
+  return handleRequest(e);
+}
+
+function doPost(e) {
+  return handleRequest(e);
+}
+
+function handleRequest(e) {
+  const action = e.parameter.action || (e.postData ? JSON.parse(e.postData.contents).action : null);
+  
+  let result;
+  try {
+    if (action === "getEvents") {
+      result = getEvents();
+    } else if (action === "addEvent") {
+      const data = JSON.parse(e.postData.contents);
+      result = addEvent(data);
+    } else if (action === "updateEvent") {
+      const data = JSON.parse(e.postData.contents);
+      result = updateEvent(data);
+    } else if (action === "deleteEvent") {
+      const data = JSON.parse(e.postData.contents);
+      result = deleteEvent(data.id);
+    } else if (action === "toggleVisible") {
+      const data = JSON.parse(e.postData.contents);
+      result = toggleVisible(data.id);
+    } else {
+      result = { error: "Unknown action" };
+    }
+  } catch (err) {
+    result = { error: err.message };
+  }
+
+  return ContentService
+    .createTextOutput(JSON.stringify(result))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function getSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAME);
+    sheet.appendRow(["id", "name", "date", "folderId", "visible", "createdAt"]);
+  }
+  return sheet;
+}
+
+function getEvents() {
+  const sheet = getSheet();
+  const rows = sheet.getDataRange().getValues();
+  if (rows.length <= 1) return { events: [] };
+  
+  const events = rows.slice(1).map(row => ({
+    id: String(row[0]),
+    name: row[1],
+    date: row[2],
+    folderId: row[3],
+    visible: row[4] === true || row[4] === "TRUE",
+    createdAt: row[5]
+  }));
+  
+  return { events };
+}
+
+function addEvent(data) {
+  const sheet = getSheet();
+  const id = Date.now().toString();
+  sheet.appendRow([id, data.name, data.date || "", data.folderId, true, new Date().toISOString()]);
+  return { success: true, id };
+}
+
+function updateEvent(data) {
+  const sheet = getSheet();
+  const rows = sheet.getDataRange().getValues();
+  
+  for (let i = 1; i < rows.length; i++) {
+    if (String(rows[i][0]) === String(data.id)) {
+      sheet.getRange(i + 1, 2).setValue(data.name);
+      sheet.getRange(i + 1, 3).setValue(data.date || "");
+      sheet.getRange(i + 1, 4).setValue(data.folderId);
+      return { success: true };
+    }
+  }
+  return { error: "Event not found" };
+}
+
+function deleteEvent(id) {
+  const sheet = getSheet();
+  const rows = sheet.getDataRange().getValues();
+  
+  for (let i = 1; i < rows.length; i++) {
+    if (String(rows[i][0]) === String(id)) {
+      sheet.deleteRow(i + 1);
+      return { success: true };
+    }
+  }
+  return { error: "Event not found" };
+}
+
+function toggleVisible(id) {
+  const sheet = getSheet();
+  const rows = sheet.getDataRange().getValues();
+  
+  for (let i = 1; i < rows.length; i++) {
+    if (String(rows[i][0]) === String(id)) {
+      const current = rows[i][4] === true || rows[i][4] === "TRUE";
+      sheet.getRange(i + 1, 5).setValue(!current);
+      return { success: true, visible: !current };
+    }
+  }
+  return { error: "Event not found" };
+}

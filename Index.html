@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📸 Galeri Photo Booth</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#f8f5f0;--surface:#fff;--card:#fff;--accent:#c9a96e;--accent-dark:#a07840;--text:#1a1410;--muted:#9a8f82;--border:#e8e0d5;--radius:14px;--shadow:0 4px 24px rgba(0,0,0,.08)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh}
+  header{background:var(--text);padding:32px 24px 0;text-align:center;position:relative;overflow:hidden}
+  header::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 40px,rgba(201,169,110,.04) 40px,rgba(201,169,110,.04) 80px)}
+  .hi{position:relative;z-index:1}
+  .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(201,169,110,.15);border:1px solid rgba(201,169,110,.3);border-radius:999px;padding:5px 14px;font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  h1{font-family:'Cormorant Garamond',serif;font-size:clamp(32px,7vw,58px);font-weight:700;color:#fff;line-height:1.05;margin-bottom:8px}
+  .tagline{color:rgba(255,255,255,.45);font-size:14px;font-weight:300;margin-bottom:28px}
+  .tabs-wrap{display:flex;gap:4px;overflow-x:auto;padding:0 4px;scrollbar-width:none;position:relative;z-index:1}
+  .tabs-wrap::-webkit-scrollbar{display:none}
+  .tab{flex-shrink:0;padding:12px 22px;border:none;background:transparent;color:rgba(255,255,255,.45);font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;cursor:pointer;border-radius:10px 10px 0 0;transition:all .2s;white-space:nowrap;position:relative}
+  .tab:hover{color:rgba(255,255,255,.75);background:rgba(255,255,255,.05)}
+  .tab.active{background:var(--bg);color:var(--text);font-weight:600}
+  .tab.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--accent);border-radius:2px 2px 0 0}
+  .ebar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  .ebar h2{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600}
+  .ebar p{font-size:13px;color:var(--muted);margin-top:2px}
+  .pill{background:var(--bg);border:1px solid var(--border);border-radius:999px;padding:5px 14px;font-size:13px;color:var(--muted);white-space:nowrap}
+  .pill span{color:var(--accent-dark);font-weight:600}
+  #loading{text-align:center;padding:80px 24px}
+  .spin{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  #empty,#noev{display:none;text-align:center;padding:80px 24px}
+  #empty .ic,#noev .ic{font-size:44px;margin-bottom:12px}
+  #empty p,#noev p{color:var(--muted);font-size:15px}
+  #gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;padding:28px 20px;max-width:1400px;margin:0 auto}
+  .pc{background:var(--card);border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);cursor:pointer;opacity:0;transform:translateY(16px);animation:fu .45s ease forwards;transition:transform .3s,box-shadow .3s;position:relative}
+  .pc:hover{transform:translateY(-5px);box-shadow:0 16px 48px rgba(0,0,0,.14)}
+  @keyframes fu{to{opacity:1;transform:translateY(0)}}
+  .pc img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:var(--bg);transition:transform .4s}
+  .pc:hover img{transform:scale(1.04)}
+  .nb{position:absolute;top:10px;left:10px;background:var(--accent);color:#fff;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:999px}
+  .cf{padding:10px 14px;display:flex;align-items:center;justify-content:space-between}
+  .ct{font-size:12px;color:var(--muted)}
+  .ca{display:flex;gap:6px}
+  .bs{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:13px;cursor:pointer;color:var(--text);text-decoration:none;display:inline-flex;align-items:center;transition:all .2s;font-family:'Outfit',sans-serif}
+  .bs:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+  .bw:hover{background:#25d366;border-color:#25d366;color:#fff}
+  #lb{display:none;position:fixed;inset:0;background:rgba(20,16,10,.93);z-index:1000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(10px)}
+  #lb.open{display:flex}
+  #lb img{max-width:90vw;max-height:82vh;object-fit:contain;border-radius:12px;animation:zi .22s ease}
+  @keyframes zi{from{transform:scale(.93);opacity:0}to{transform:scale(1);opacity:1}}
+  #lbc{position:absolute;top:18px;right:18px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;width:40px;height:40px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
+  #lbc:hover{background:rgba(255,255,255,.2)}
+  #lba{position:absolute;bottom:24px;display:flex;gap:10px}
+  .bg{background:var(--accent);color:#fff;border:none;border-radius:999px;padding:10px 22px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:opacity .2s,transform .2s}
+  .bg:hover{opacity:.85;transform:scale(1.03)}
+  .bgw{background:#25d366;color:#fff;border:none;border-radius:999px;padding:10px 22px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:opacity .2s,transform .2s}
+  .bgw:hover{opacity:.85;transform:scale(1.03)}
+  footer{text-align:center;padding:28px 24px;border-top:1px solid var(--border);color:var(--muted);font-size:12px}
+  @media(max-width:480px){#gallery{grid-template-columns:repeat(2,1fr);gap:10px;padding:16px 12px}.ebar{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+<header>
+  <div class="hi">
+    <div class="badge">📸 Photo Booth</div>
+    <h1>Galeri Foto</h1>
+    <p class="tagline">Temukan & simpan momen terbaik kamu</p>
+    <div class="tabs-wrap" id="tabs"></div>
+  </div>
+</header>
+<div class="ebar" id="ebar" style="display:none">
+  <div><h2 id="en">—</h2><p id="ed">—</p></div>
+  <div class="pill">Total <span id="cnt">0</span> foto</div>
+</div>
+<div id="noev"><div class="ic">🎪</div><p>Belum ada event tersedia.<br>Silakan hubungi operator photo booth.</p></div>
+<div id="loading"><div class="spin"></div><p style="color:var(--muted);font-size:14px">Memuat...</p></div>
+<div id="empty"><div class="ic">📷</div><p>Belum ada foto di event ini.<br>Cek kembali sebentar lagi!</p></div>
+<div id="gallery"></div>
+<div id="lb">
+  <button id="lbc" onclick="closeLB()">✕</button>
+  <img id="lbi" src="" alt="">
+  <div id="lba">
+    <a id="lbd" class="bg" href="#" download>⬇ Download</a>
+    <a id="lbw" class="bgw" href="#" target="_blank">🟢 Share WA</a>
+  </div>
+</div>
+<footer>Foto terbaru selalu tampil paling atas &nbsp;·&nbsp; Auto-refresh tiap 60 detik</footer>
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby1u_AtcGLCfaZMAwyLDmb_G76xxGLENxUQEqkZu4wHhf_KhcCS4NZtuNR-kaWpdAe_pA/exec";
+const API_KEY    = "AIzaSyCTa5Vjz8IvcoMmyl4I-PZOlo-DiVSPygk";
+
+let activeId = null, timer = null;
+
+async function init() {
+  try {
+    const res = await fetch(`${SCRIPT_URL}?action=getEvents`);
+    const data = await res.json();
+    const evs = (data.events||[]).filter(e=>e.visible);
+    document.getElementById("loading").style.display = "none";
+    if (!evs.length) { document.getElementById("noev").style.display="block"; return; }
+    document.getElementById("ebar").style.display = "flex";
+    renderTabs(evs);
+    switchEv(evs[0], evs);
+  } catch(e) {
+    document.getElementById("loading").innerHTML = `<p style="color:#c0392b;font-size:14px">⚠️ Gagal memuat.<br><small style="color:var(--muted)">${e.message}</small></p>`;
+  }
+}
+
+function renderTabs(evs) {
+  const c = document.getElementById("tabs"); c.innerHTML="";
+  evs.forEach(ev=>{
+    const b=document.createElement("button");
+    b.className="tab"+(ev.id===activeId?" active":"");
+    b.textContent=ev.name; b.onclick=()=>switchEv(ev,evs); c.appendChild(b);
+  });
+}
+
+function switchEv(ev, evs) {
+  activeId=ev.id; renderTabs(evs);
+  document.getElementById("en").textContent=ev.name;
+  document.getElementById("ed").textContent=ev.date||"";
+  document.getElementById("gallery").innerHTML="";
+  document.getElementById("empty").style.display="none";
+  document.getElementById("loading").style.display="block";
+  if(timer) clearInterval(timer);
+  loadPhotos(ev);
+  timer=setInterval(()=>loadPhotos(ev),60000);
+}
+
+async function loadPhotos(ev) {
+  try {
+    const url=`https://www.googleapis.com/drive/v3/files?q='${ev.folderId}'+in+parents+and+mimeType+contains+'image/'&orderBy=createdTime+desc&fields=files(id,name,createdTime,thumbnailLink)&pageSize=200&key=${API_KEY}`;
+    const res=await fetch(url);
+    if(!res.ok) throw new Error(`API Error ${res.status}`);
+    const data=await res.json();
+    document.getElementById("loading").style.display="none";
+    if(!data.files||!data.files.length){document.getElementById("empty").style.display="block";document.getElementById("cnt").textContent="0";return;}
+    document.getElementById("cnt").textContent=data.files.length;
+    renderPhotos(data.files,ev);
+  } catch(e) {
+    document.getElementById("loading").innerHTML=`<p style="color:#c0392b;font-size:14px">⚠️ Gagal memuat foto.<br><small style="color:var(--muted)">${e.message}</small></p>`;
+  }
+}
+
+function renderPhotos(files,ev) {
+  const g=document.getElementById("gallery"); g.innerHTML="";
+  const now=Date.now();
+  files.forEach((f,i)=>{
+    const cr=new Date(f.createdTime);
+    const isNew=(now-cr.getTime())<30*60*1000;
+    const ts=cr.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});
+    const ds=cr.toLocaleDateString("id-ID",{day:"numeric",month:"short"});
+    const th=f.thumbnailLink?f.thumbnailLink.replace("=s220","=s600"):`https://drive.google.com/thumbnail?id=${f.id}&sz=w600`;
+    const dl=`https://drive.google.com/uc?export=download&id=${f.id}`;
+    const vl=`https://drive.google.com/file/d/${f.id}/view`;
+    const wa=`https://wa.me/?text=${encodeURIComponent(`Lihat foto saya dari ${ev.name}! 📸\n${vl}`)}`;
+    const c=document.createElement("div");
+    c.className="pc"; c.style.animationDelay=`${i*.04}s`;
+    c.innerHTML=`${isNew?'<div class="nb">✨ Baru</div>':''}<img src="${th}" loading="lazy" onclick="openLB('${th}','${dl}','${wa}')"><div class="cf"><span class="ct">🕐 ${ts} · ${ds}</span><div class="ca"><a class="bs" href="${dl}" download>⬇</a><a class="bs bw" href="${wa}" target="_blank">🟢</a></div></div>`;
+    g.appendChild(c);
+  });
+}
+
+function openLB(i,d,w){document.getElementById("lbi").src=i;document.getElementById("lbd").href=d;document.getElementById("lbw").href=w;document.getElementById("lb").classList.add("open")}
+function closeLB(){document.getElementById("lb").classList.remove("open")}
+document.getElementById("lb").addEventListener("click",e=>{if(e.target===document.getElementById("lb"))closeLB()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeLB()});
+init();
+</script>
+</body>
+</html>
