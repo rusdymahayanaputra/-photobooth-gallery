@@ -1,0 +1,2 @@
+# -photobooth-gallery
+Galeri Photobooth
