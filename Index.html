@@ -9,58 +9,108 @@
   :root{--bg:#f8f5f0;--surface:#fff;--card:#fff;--accent:#c9a96e;--accent-dark:#a07840;--text:#1a1410;--muted:#9a8f82;--border:#e8e0d5;--radius:14px;--shadow:0 4px 24px rgba(0,0,0,.08)}
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh}
+
   header{background:var(--text);padding:32px 24px 0;text-align:center;position:relative;overflow:hidden}
   header::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 40px,rgba(201,169,110,.04) 40px,rgba(201,169,110,.04) 80px)}
   .hi{position:relative;z-index:1}
   .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(201,169,110,.15);border:1px solid rgba(201,169,110,.3);border-radius:999px;padding:5px 14px;font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
   h1{font-family:'Cormorant Garamond',serif;font-size:clamp(32px,7vw,58px);font-weight:700;color:#fff;line-height:1.05;margin-bottom:8px}
   .tagline{color:rgba(255,255,255,.45);font-size:14px;font-weight:300;margin-bottom:28px}
+
   .tabs-wrap{display:flex;gap:4px;overflow-x:auto;padding:0 4px;scrollbar-width:none;position:relative;z-index:1}
   .tabs-wrap::-webkit-scrollbar{display:none}
   .tab{flex-shrink:0;padding:12px 22px;border:none;background:transparent;color:rgba(255,255,255,.45);font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;cursor:pointer;border-radius:10px 10px 0 0;transition:all .2s;white-space:nowrap;position:relative}
   .tab:hover{color:rgba(255,255,255,.75);background:rgba(255,255,255,.05)}
   .tab.active{background:var(--bg);color:var(--text);font-weight:600}
   .tab.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--accent);border-radius:2px 2px 0 0}
+
   .ebar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
   .ebar h2{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600}
   .ebar p{font-size:13px;color:var(--muted);margin-top:2px}
   .pill{background:var(--bg);border:1px solid var(--border);border-radius:999px;padding:5px 14px;font-size:13px;color:var(--muted);white-space:nowrap}
   .pill span{color:var(--accent-dark);font-weight:600}
+
   #loading{text-align:center;padding:80px 24px}
   .spin{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px}
   @keyframes spin{to{transform:rotate(360deg)}}
   #empty,#noev{display:none;text-align:center;padding:80px 24px}
   #empty .ic,#noev .ic{font-size:44px;margin-bottom:12px}
   #empty p,#noev p{color:var(--muted);font-size:15px}
+
+  /* ── GRID ── */
   #gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;padding:28px 20px;max-width:1400px;margin:0 auto}
+
   .pc{background:var(--card);border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);cursor:pointer;opacity:0;transform:translateY(16px);animation:fu .45s ease forwards;transition:transform .3s,box-shadow .3s;position:relative}
   .pc:hover{transform:translateY(-5px);box-shadow:0 16px 48px rgba(0,0,0,.14)}
   @keyframes fu{to{opacity:1;transform:translateY(0)}}
-  .pc img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:var(--bg);transition:transform .4s}
-  .pc:hover img{transform:scale(1.04)}
+
+  /* Thumbnail wrapper — foto di atas, indikator video di pojok */
+  .thumb-wrap{position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--bg)}
+  .thumb-wrap img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
+  .pc:hover .thumb-wrap img{transform:scale(1.04)}
+
+  /* Badge video */
+  .vid-badge{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);color:#fff;border-radius:8px;padding:4px 9px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:4px}
+  .vid-badge svg{width:12px;height:12px;fill:#fff}
+
   .nb{position:absolute;top:10px;left:10px;background:var(--accent);color:#fff;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:999px}
+
   .cf{padding:10px 14px;display:flex;align-items:center;justify-content:space-between}
   .ct{font-size:12px;color:var(--muted)}
   .ca{display:flex;gap:6px}
   .bs{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:13px;cursor:pointer;color:var(--text);text-decoration:none;display:inline-flex;align-items:center;transition:all .2s;font-family:'Outfit',sans-serif}
   .bs:hover{background:var(--accent);border-color:var(--accent);color:#fff}
   .bw:hover{background:#25d366;border-color:#25d366;color:#fff}
-  #lb{display:none;position:fixed;inset:0;background:rgba(20,16,10,.93);z-index:1000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(10px)}
+
+  /* ── LIGHTBOX ── */
+  #lb{display:none;position:fixed;inset:0;background:rgba(10,8,6,.95);z-index:1000;flex-direction:column;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(12px)}
   #lb.open{display:flex}
-  #lb img{max-width:90vw;max-height:82vh;object-fit:contain;border-radius:12px;animation:zi .22s ease}
+
+  /* Slide container */
+  .lb-slides{position:relative;width:100%;max-width:900px;display:flex;align-items:center;justify-content:center}
+
+  .lb-media{display:none;flex-direction:column;align-items:center;gap:12px;width:100%}
+  .lb-media.active{display:flex}
+
+  .lb-media img,.lb-media video{max-width:90vw;max-height:72vh;object-fit:contain;border-radius:12px;animation:zi .22s ease;box-shadow:0 20px 80px rgba(0,0,0,.6)}
   @keyframes zi{from{transform:scale(.93);opacity:0}to{transform:scale(1);opacity:1}}
+
+  .lb-media video{background:#000;width:90vw;max-width:700px}
+
+  /* Slide type label */
+  .lb-type{font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4)}
+
+  /* Nav arrows */
+  .lb-arr{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;width:44px;height:44px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;z-index:2;user-select:none}
+  .lb-arr:hover{background:rgba(255,255,255,.2)}
+  .lb-arr.left{left:-56px}
+  .lb-arr.right{right:-56px}
+  @media(max-width:600px){.lb-arr.left{left:-2px}.lb-arr.right{right:-2px}}
+
+  /* Dots indicator */
+  .lb-dots{display:flex;gap:6px;margin-top:14px}
+  .lb-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.25);transition:all .2s;cursor:pointer}
+  .lb-dot.active{background:var(--accent);width:20px;border-radius:4px}
+
+  /* Close & actions */
   #lbc{position:absolute;top:18px;right:18px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;width:40px;height:40px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
-  #lbc:hover{background:rgba(255,255,255,.2)}
-  #lba{position:absolute;bottom:24px;display:flex;gap:10px}
+  #lbc:hover{background:rgba(255,255,255,.22)}
+
+  #lba{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;justify-content:center}
   .bg{background:var(--accent);color:#fff;border:none;border-radius:999px;padding:10px 22px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:opacity .2s,transform .2s}
   .bg:hover{opacity:.85;transform:scale(1.03)}
   .bgw{background:#25d366;color:#fff;border:none;border-radius:999px;padding:10px 22px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:opacity .2s,transform .2s}
   .bgw:hover{opacity:.85;transform:scale(1.03)}
+  .bgv{background:#333;color:#fff;border:1px solid #555;border-radius:999px;padding:10px 22px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all .2s}
+  .bgv:hover{background:#444;border-color:#666}
+  .bgv.hidden{display:none}
+
   footer{text-align:center;padding:28px 24px;border-top:1px solid var(--border);color:var(--muted);font-size:12px}
   @media(max-width:480px){#gallery{grid-template-columns:repeat(2,1fr);gap:10px;padding:16px 12px}.ebar{flex-direction:column;align-items:flex-start}}
 </style>
 </head>
 <body>
+
 <header>
   <div class="hi">
     <div class="badge">📸 Photo Booth</div>
@@ -69,103 +119,309 @@
     <div class="tabs-wrap" id="tabs"></div>
   </div>
 </header>
+
 <div class="ebar" id="ebar" style="display:none">
   <div><h2 id="en">—</h2><p id="ed">—</p></div>
-  <div class="pill">Total <span id="cnt">0</span> foto</div>
+  <div class="pill">Total <span id="cnt">0</span> sesi</div>
 </div>
+
 <div id="noev"><div class="ic">🎪</div><p>Belum ada event tersedia.<br>Silakan hubungi operator photo booth.</p></div>
 <div id="loading"><div class="spin"></div><p style="color:var(--muted);font-size:14px">Memuat...</p></div>
 <div id="empty"><div class="ic">📷</div><p>Belum ada foto di event ini.<br>Cek kembali sebentar lagi!</p></div>
 <div id="gallery"></div>
+
+<!-- LIGHTBOX -->
 <div id="lb">
   <button id="lbc" onclick="closeLB()">✕</button>
-  <img id="lbi" src="" alt="">
+
+  <div class="lb-slides">
+    <!-- Slide 0: Foto -->
+    <div class="lb-media active" id="slide-0">
+      <img id="lbi" src="" alt="Foto">
+      <div class="lb-type">📷 FOTO</div>
+    </div>
+    <!-- Slide 1: Video -->
+    <div class="lb-media" id="slide-1">
+      <video id="lbv" controls autoplay loop playsinline></video>
+      <div class="lb-type">🎬 GIF / VIDEO</div>
+    </div>
+
+    <!-- Nav arrows (hanya muncul jika ada video) -->
+    <button class="lb-arr left" id="arr-left" onclick="slideNav(-1)">‹</button>
+    <button class="lb-arr right" id="arr-right" onclick="slideNav(1)">›</button>
+  </div>
+
+  <!-- Dots -->
+  <div class="lb-dots" id="lb-dots"></div>
+
+  <!-- Action buttons -->
   <div id="lba">
-    <a id="lbd" class="bg" href="#" download>⬇ Download</a>
+    <a id="lbd" class="bg" href="#" download>⬇ Download Foto</a>
+    <a id="lbdv" class="bgv" href="#" download>⬇ Download Video</a>
     <a id="lbw" class="bgw" href="#" target="_blank">🟢 Share WA</a>
   </div>
 </div>
-<footer>Foto terbaru selalu tampil paling atas &nbsp;·&nbsp; Auto-refresh tiap 60 detik</footer>
+
+<footer>Foto & video terbaru selalu tampil paling atas &nbsp;·&nbsp; Auto-refresh tiap 60 detik</footer>
+
 <script>
+// ══════════════════════════════════════════
+// KONFIGURASI — isi 2 baris ini saja
+// ══════════════════════════════════════════
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby1u_AtcGLCfaZMAwyLDmb_G76xxGLENxUQEqkZu4wHhf_KhcCS4NZtuNR-kaWpdAe_pA/exec";
 const API_KEY    = "AIzaSyCTa5Vjz8IvcoMmyl4I-PZOlo-DiVSPygk";
+// ══════════════════════════════════════════
 
 let activeId = null, timer = null;
+let lbSlide = 0, lbHasVideo = false;
+let touchStartX = 0;
 
+// ── Load events dari Apps Script ──
 async function init() {
   try {
     const res = await fetch(`${SCRIPT_URL}?action=getEvents`);
     const data = await res.json();
-    const evs = (data.events||[]).filter(e=>e.visible);
+    const evs = (data.events||[]).filter(e => e.visible);
     document.getElementById("loading").style.display = "none";
     if (!evs.length) { document.getElementById("noev").style.display="block"; return; }
     document.getElementById("ebar").style.display = "flex";
     renderTabs(evs);
     switchEv(evs[0], evs);
   } catch(e) {
-    document.getElementById("loading").innerHTML = `<p style="color:#c0392b;font-size:14px">⚠️ Gagal memuat.<br><small style="color:var(--muted)">${e.message}</small></p>`;
+    document.getElementById("loading").innerHTML =
+      `<p style="color:#c0392b;font-size:14px">⚠️ Gagal memuat.<br><small style="color:var(--muted)">${e.message}</small></p>`;
   }
 }
 
 function renderTabs(evs) {
-  const c = document.getElementById("tabs"); c.innerHTML="";
-  evs.forEach(ev=>{
-    const b=document.createElement("button");
-    b.className="tab"+(ev.id===activeId?" active":"");
-    b.textContent=ev.name; b.onclick=()=>switchEv(ev,evs); c.appendChild(b);
+  const c = document.getElementById("tabs"); c.innerHTML = "";
+  evs.forEach(ev => {
+    const b = document.createElement("button");
+    b.className = "tab" + (ev.id === activeId ? " active" : "");
+    b.textContent = ev.name;
+    b.onclick = () => switchEv(ev, evs);
+    c.appendChild(b);
   });
 }
 
 function switchEv(ev, evs) {
-  activeId=ev.id; renderTabs(evs);
-  document.getElementById("en").textContent=ev.name;
-  document.getElementById("ed").textContent=ev.date||"";
-  document.getElementById("gallery").innerHTML="";
-  document.getElementById("empty").style.display="none";
-  document.getElementById("loading").style.display="block";
-  if(timer) clearInterval(timer);
-  loadPhotos(ev);
-  timer=setInterval(()=>loadPhotos(ev),60000);
+  activeId = ev.id; renderTabs(evs);
+  document.getElementById("en").textContent = ev.name;
+  document.getElementById("ed").textContent = ev.date || "";
+  document.getElementById("gallery").innerHTML = "";
+  document.getElementById("empty").style.display = "none";
+  document.getElementById("loading").style.display = "block";
+  if (timer) clearInterval(timer);
+  loadFiles(ev);
+  timer = setInterval(() => loadFiles(ev), 60000);
 }
 
-async function loadPhotos(ev) {
+// ── Load semua file (foto + video) dari Drive ──
+async function loadFiles(ev) {
   try {
-    const url=`https://www.googleapis.com/drive/v3/files?q='${ev.folderId}'+in+parents+and+mimeType+contains+'image/'&orderBy=createdTime+desc&fields=files(id,name,createdTime,thumbnailLink)&pageSize=200&key=${API_KEY}`;
-    const res=await fetch(url);
-    if(!res.ok) throw new Error(`API Error ${res.status}`);
-    const data=await res.json();
-    document.getElementById("loading").style.display="none";
-    if(!data.files||!data.files.length){document.getElementById("empty").style.display="block";document.getElementById("cnt").textContent="0";return;}
-    document.getElementById("cnt").textContent=data.files.length;
-    renderPhotos(data.files,ev);
+    const url = `https://www.googleapis.com/drive/v3/files`
+      + `?q='${ev.folderId}'+in+parents`
+      + `+and+(mimeType+contains+'image/'+or+mimeType+contains+'video/')`
+      + `&orderBy=createdTime+desc`
+      + `&fields=files(id,name,mimeType,createdTime,thumbnailLink)`
+      + `&pageSize=500&key=${API_KEY}`;
+
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`API Error ${res.status}`);
+    const data = await res.json();
+
+    document.getElementById("loading").style.display = "none";
+
+    if (!data.files || !data.files.length) {
+      document.getElementById("empty").style.display = "block";
+      document.getElementById("cnt").textContent = "0";
+      return;
+    }
+
+    // Pisahkan foto dan video
+    const photos = data.files.filter(f => f.mimeType.startsWith("image/"));
+    const videos = data.files.filter(f => f.mimeType.startsWith("video/"));
+
+    // Pasangkan berdasarkan nama file (tanpa ekstensi)
+    const sessions = pairFiles(photos, videos);
+    document.getElementById("cnt").textContent = sessions.length;
+    renderGallery(sessions, ev);
   } catch(e) {
-    document.getElementById("loading").innerHTML=`<p style="color:#c0392b;font-size:14px">⚠️ Gagal memuat foto.<br><small style="color:var(--muted)">${e.message}</small></p>`;
+    document.getElementById("loading").innerHTML =
+      `<p style="color:#c0392b;font-size:14px">⚠️ Gagal memuat.<br><small style="color:var(--muted)">${e.message}</small></p>`;
   }
 }
 
-function renderPhotos(files,ev) {
-  const g=document.getElementById("gallery"); g.innerHTML="";
-  const now=Date.now();
-  files.forEach((f,i)=>{
-    const cr=new Date(f.createdTime);
-    const isNew=(now-cr.getTime())<30*60*1000;
-    const ts=cr.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});
-    const ds=cr.toLocaleDateString("id-ID",{day:"numeric",month:"short"});
-    const th=f.thumbnailLink?f.thumbnailLink.replace("=s220","=s600"):`https://drive.google.com/thumbnail?id=${f.id}&sz=w600`;
-    const dl=`https://drive.google.com/uc?export=download&id=${f.id}`;
-    const vl=`https://drive.google.com/file/d/${f.id}/view`;
-    const wa=`https://wa.me/?text=${encodeURIComponent(`Lihat foto saya dari ${ev.name}! 📸\n${vl}`)}`;
-    const c=document.createElement("div");
-    c.className="pc"; c.style.animationDelay=`${i*.04}s`;
-    c.innerHTML=`${isNew?'<div class="nb">✨ Baru</div>':''}<img src="${th}" loading="lazy" onclick="openLB('${th}','${dl}','${wa}')"><div class="cf"><span class="ct">🕐 ${ts} · ${ds}</span><div class="ca"><a class="bs" href="${dl}" download>⬇</a><a class="bs bw" href="${wa}" target="_blank">🟢</a></div></div>`;
-    g.appendChild(c);
+// ── Pasangkan foto & video berdasarkan nama ──
+function pairFiles(photos, videos) {
+  // Buat map video: nama_tanpa_ekstensi → file
+  const videoMap = {};
+  videos.forEach(v => {
+    const baseName = v.name.replace(/\.[^.]+$/, "").toLowerCase();
+    videoMap[baseName] = v;
+  });
+
+  // Pasangkan tiap foto dengan video yang namanya sama
+  const sessions = photos.map(photo => {
+    const baseName = photo.name.replace(/\.[^.]+$/, "").toLowerCase();
+    return {
+      photo,
+      video: videoMap[baseName] || null,
+      createdTime: photo.createdTime
+    };
+  });
+
+  // Urutkan terbaru di atas
+  sessions.sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime));
+  return sessions;
+}
+
+// ── Render grid ──
+function renderGallery(sessions, ev) {
+  const g = document.getElementById("gallery");
+  g.innerHTML = "";
+  const now = Date.now();
+
+  sessions.forEach((s, i) => {
+    const created = new Date(s.createdTime);
+    const isNew = (now - created.getTime()) < 30 * 60 * 1000;
+    const timeStr = created.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+    const dateStr = created.toLocaleDateString("id-ID", { day: "numeric", month: "short" });
+
+    const thumb = s.photo.thumbnailLink
+      ? s.photo.thumbnailLink.replace("=s220", "=s600")
+      : `https://drive.google.com/thumbnail?id=${s.photo.id}&sz=w600`;
+    const dlPhoto = `https://drive.google.com/uc?export=download&id=${s.photo.id}`;
+    const dlVideo = s.video ? `https://drive.google.com/uc?export=download&id=${s.video.id}` : "";
+    const viewUrl = `https://drive.google.com/file/d/${s.photo.id}/view`;
+    const waUrl = `https://wa.me/?text=${encodeURIComponent(`Lihat foto saya dari ${ev.name}! 📸\n${viewUrl}`)}`;
+
+    const card = document.createElement("div");
+    card.className = "pc";
+    card.style.animationDelay = `${i * 0.04}s`;
+    card.innerHTML = `
+      <div class="thumb-wrap" onclick="openLB('${thumb}','${dlPhoto}','${dlVideo}','${waUrl}','${s.video ? s.video.id : ''}')">
+        <img src="${thumb}" loading="lazy" alt="Foto">
+        ${s.video ? `<div class="vid-badge">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          GIF
+        </div>` : ''}
+        ${isNew ? '<div class="nb">✨ Baru</div>' : ''}
+      </div>
+      <div class="cf">
+        <span class="ct">🕐 ${timeStr} · ${dateStr}</span>
+        <div class="ca">
+          <a class="bs" href="${dlPhoto}" download onclick="event.stopPropagation()">⬇</a>
+          <a class="bs bw" href="${waUrl}" target="_blank" onclick="event.stopPropagation()">🟢</a>
+        </div>
+      </div>`;
+    g.appendChild(card);
   });
 }
 
-function openLB(i,d,w){document.getElementById("lbi").src=i;document.getElementById("lbd").href=d;document.getElementById("lbw").href=w;document.getElementById("lb").classList.add("open")}
-function closeLB(){document.getElementById("lb").classList.remove("open")}
-document.getElementById("lb").addEventListener("click",e=>{if(e.target===document.getElementById("lb"))closeLB()});
-document.addEventListener("keydown",e=>{if(e.key==="Escape")closeLB()});
+// ── Lightbox ──
+function openLB(thumb, dlPhoto, dlVideo, waUrl, videoId) {
+  lbSlide = 0;
+  lbHasVideo = !!videoId;
+
+  // Set foto
+  document.getElementById("lbi").src = thumb;
+  document.getElementById("lbd").href = dlPhoto;
+  document.getElementById("lbw").href = waUrl;
+
+  // Set video
+  if (videoId) {
+    // Gunakan Google Drive embed URL untuk video
+    const videoSrc = `https://drive.google.com/uc?export=download&id=${videoId}`;
+    document.getElementById("lbv").src = videoSrc;
+    document.getElementById("lbdv").href = dlVideo;
+    document.getElementById("lbdv").classList.remove("hidden");
+  } else {
+    document.getElementById("lbv").src = "";
+    document.getElementById("lbdv").classList.add("hidden");
+  }
+
+  // Tampilkan/sembunyikan nav
+  document.getElementById("arr-left").style.display = lbHasVideo ? "flex" : "none";
+  document.getElementById("arr-right").style.display = lbHasVideo ? "flex" : "none";
+
+  // Dots
+  renderDots();
+  goSlide(0);
+
+  document.getElementById("lb").classList.add("open");
+}
+
+function renderDots() {
+  const dots = document.getElementById("lb-dots");
+  dots.innerHTML = "";
+  if (!lbHasVideo) { dots.style.display = "none"; return; }
+  dots.style.display = "flex";
+  ["📷", "🎬"].forEach((_, i) => {
+    const d = document.createElement("div");
+    d.className = "lb-dot" + (i === lbSlide ? " active" : "");
+    d.onclick = () => goSlide(i);
+    dots.appendChild(d);
+  });
+}
+
+function goSlide(idx) {
+  lbSlide = idx;
+  // Pause video jika pindah ke foto
+  const vid = document.getElementById("lbv");
+
+  document.getElementById("slide-0").classList.toggle("active", idx === 0);
+  document.getElementById("slide-1").classList.toggle("active", idx === 1);
+
+  if (idx === 1) {
+    vid.play().catch(() => {});
+  } else {
+    vid.pause();
+  }
+
+  // Update dots
+  document.querySelectorAll(".lb-dot").forEach((d, i) => {
+    d.classList.toggle("active", i === idx);
+  });
+
+  // Update download button label
+  document.getElementById("lbd").textContent = "⬇ Download Foto";
+}
+
+function slideNav(dir) {
+  if (!lbHasVideo) return;
+  const total = 2;
+  goSlide((lbSlide + dir + total) % total);
+}
+
+function closeLB() {
+  document.getElementById("lb").classList.remove("open");
+  document.getElementById("lbv").pause();
+  document.getElementById("lbv").src = "";
+}
+
+// Tutup klik di luar
+document.getElementById("lb").addEventListener("click", e => {
+  if (e.target === document.getElementById("lb")) closeLB();
+});
+
+// Keyboard nav
+document.addEventListener("keydown", e => {
+  if (!document.getElementById("lb").classList.contains("open")) return;
+  if (e.key === "Escape") closeLB();
+  if (e.key === "ArrowLeft") slideNav(-1);
+  if (e.key === "ArrowRight") slideNav(1);
+});
+
+// Touch swipe
+document.getElementById("lb").addEventListener("touchstart", e => {
+  touchStartX = e.touches[0].clientX;
+}, { passive: true });
+document.getElementById("lb").addEventListener("touchend", e => {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 50) slideNav(diff > 0 ? 1 : -1);
+});
+
 init();
 </script>
 </body>
