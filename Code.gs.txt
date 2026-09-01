@@ -22,7 +22,7 @@
 
 const SHEET_NAME = "Events";
 
-const ADMIN_PASS = admin123;
+const ADMIN_PASS = "admin123";
 
 function getAdminPass() {
   return PropertiesService.getScriptProperties().getProperty("ADMIN_PASS");
