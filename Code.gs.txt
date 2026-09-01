@@ -16,7 +16,7 @@
 //   1. Di editor Apps Script, klik ikon roda gigi "Project Settings"
 //   2. Scroll ke "Script Properties" → "Add script property"
 //   3. Property : ADMIN_PASS
-//      Value    : (password admin yang kamu mau)
+//      Value    : admin123
 //   4. Save, lalu Deploy ulang (Deploy > Manage deployments > Edit > Deploy)
 // ================================================================
 
