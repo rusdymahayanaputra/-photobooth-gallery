@@ -12,20 +12,31 @@
 // ke halaman web). Aksi baca (getEvents) tetap terbuka karena galeri
 // memang harus bisa membacanya tanpa login.
 //
-// CARA SET PASSWORD (sekali saja):
-//   1. Di editor Apps Script, klik ikon roda gigi "Project Settings"
-//   2. Scroll ke "Script Properties" → "Add script property"
-//   3. Property : ADMIN_PASS
-//      Value    : admin123
-//   4. Save, lalu Deploy ulang (Deploy > Manage deployments > Edit > Deploy)
+// CARA SET PASSWORD:
+//   Ganti isi ADMIN_PASS di baris yang ditandai di bawah,
+//   lalu Save + Deploy ulang (Deploy > Manage deployments > Edit > New version).
 // ================================================================
 
 const SHEET_NAME = "Events";
 
-const ADMIN_PASS = "admin123";
+// ══════════════════════════════════════════════════════════
+//  ⬇⬇⬇  GANTI PASSWORD ADMIN GALERI DI BARIS DI BAWAH INI  ⬇⬇⬇
+// ══════════════════════════════════════════════════════════
+const ADMIN_PASS = "ganti-password-ini";
+// ══════════════════════════════════════════════════════════
+//
+//  Aman ditulis di sini. Berbeda dengan index.html, berkas Code.gs
+//  ini berjalan di server Google dan TIDAK PERNAH dikirim ke browser
+//  pengunjung — jadi tidak bisa dibaca lewat "view source".
+//
+//  (Opsional, lebih rapi) Kalau nanti kamu mau memisahkan password
+//  dari kode, isi Script Properties dengan nama ADMIN_PASS. Bila diisi,
+//  nilai itu yang dipakai dan baris di atas diabaikan.
+// ══════════════════════════════════════════════════════════
 
 function getAdminPass() {
-  return PropertiesService.getScriptProperties().getProperty("ADMIN_PASS");
+  var fromProps = PropertiesService.getScriptProperties().getProperty("ADMIN_PASS");
+  return fromProps || ADMIN_PASS;
 }
 
 function doGet(e) {
