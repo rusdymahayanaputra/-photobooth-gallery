@@ -13,6 +13,7 @@
   .hl{display:flex;align-items:center;gap:12px}
   .abadge{background:rgba(201,169,110,.15);border:1px solid rgba(201,169,110,.3);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--accent)}
   header h1{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700}
+  .hr{display:flex;gap:8px;align-items:center}
   .btn-gl{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:8px 16px;color:var(--muted);font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all .2s}
   .btn-gl:hover{border-color:var(--accent);color:var(--accent)}
   .wrap{max-width:800px;margin:0 auto;padding:32px 20px}
@@ -22,6 +23,7 @@
   .fgp{display:flex;flex-direction:column;gap:6px}
   .fgp.full{grid-column:1/-1}
   label{font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .hintline{font-size:11px;color:#666;text-transform:none;letter-spacing:0;line-height:1.6;margin-top:2px}
   input{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;transition:border-color .2s;outline:none;width:100%}
   input:focus{border-color:var(--accent)}
   input::placeholder{color:#555}
@@ -64,27 +66,75 @@
   .ma{display:flex;gap:10px;margin-top:20px}
   .bc{background:none;border:1px solid var(--border);border-radius:999px;padding:10px 20px;color:var(--muted);font-family:'Outfit',sans-serif;font-size:14px;cursor:pointer;transition:all .2s}
   .bc:hover{border-color:#555;color:var(--text)}
-  #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);border:1px solid var(--border);border-radius:999px;padding:10px 20px;font-size:14px;color:var(--text);z-index:999;transition:transform .3s;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+  #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);border:1px solid var(--border);border-radius:999px;padding:10px 20px;font-size:14px;color:var(--text);z-index:999;transition:transform .3s;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,.4);max-width:90vw;overflow:hidden;text-overflow:ellipsis}
   #toast.show{transform:translateX(-50%) translateY(0)}
+
+  /* ── LOGIN ── */
+  #login{position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px}
+  #login.hide{display:none}
+  .lbox{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px 28px;width:100%;max-width:340px;text-align:center}
+  .lbox .ic{font-size:38px;margin-bottom:12px}
+  .lbox h2{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--accent);margin-bottom:4px}
+  .lbox p{font-size:12px;color:var(--muted);margin-bottom:22px}
+  .lw{position:relative;margin-bottom:12px}
+  .lw input{padding-right:44px;text-align:center;letter-spacing:2px}
+  .leye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px}
+  .lerr{font-size:12px;color:var(--red);margin-bottom:12px;display:none}
+  .lerr.show{display:block}
+  .lbox .bp{width:100%;justify-content:center}
+  .lback{display:inline-block;margin-top:16px;font-size:12px;color:var(--muted);text-decoration:none}
+  .lback:hover{color:var(--accent)}
+
   @media(max-width:500px){.fg{grid-template-columns:1fr}.ei{flex-wrap:wrap}.eact{width:100%;justify-content:flex-end}}
 </style>
 </head>
 <body>
+
+<!-- ══ LOGIN ══ -->
+<div id="login">
+  <div class="lbox">
+    <div class="ic">🔐</div>
+    <h2>Panel Admin</h2>
+    <p>Masukkan password untuk melanjutkan</p>
+    <div class="lw">
+      <input type="password" id="lpass" placeholder="Password" autofocus
+             onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="leye" onclick="toggleEye()" id="leye">👁</button>
+    </div>
+    <div class="lerr" id="lerr">Password salah.</div>
+    <button class="bp" id="lbtn" onclick="doLogin()">Masuk</button>
+    <a class="lback" href="index.html">← Kembali ke Galeri</a>
+  </div>
+</div>
+
 <header>
   <div class="hl">
     <div class="abadge">⚙️ Admin</div>
     <h1>Photo Booth Manager</h1>
   </div>
-  <a class="btn-gl" href="index.html" target="_blank">👁 Lihat Galeri →</a>
+  <div class="hr">
+    <a class="btn-gl" href="index.html" target="_blank">🖼 Lihat Galeri →</a>
+    <button class="btn-gl" onclick="doLogout()">Keluar</button>
+  </div>
 </header>
 
 <div class="wrap">
   <div class="fc">
     <h2>➕ Tambah Event Baru</h2>
     <div class="fg">
-      <div class="fgp"><label>Nama Event *</label><input type="text" id="iname" placeholder="cth: Wedding Budi & Sari"></div>
-      <div class="fgp"><label>Tanggal Event</label><input type="text" id="idate" placeholder="cth: Sabtu, 15 Agustus 2024"></div>
-      <div class="fgp full"><label>Google Drive Folder ID *</label><input type="text" id="ifolder" placeholder="cth: 1aBcDeFgHiJkLmNoPqRsTuVwXyZ"></div>
+      <div class="fgp"><label>Nama Event *</label><input type="text" id="iname" placeholder="cth: Car Free Day 1 Sep"></div>
+      <div class="fgp"><label>Tanggal Event</label><input type="text" id="idate" placeholder="cth: Minggu, 1 September 2026"></div>
+      <div class="fgp full">
+        <label>Google Drive Folder ID *</label>
+        <input type="text" id="ifolder" placeholder="cth: 1aBcDeFgHiJkLmNoPqRsTuVwXyZ">
+        <span class="hintline">
+          Ini folder <b>event</b> yang sama dengan “Folder Event” di admin aplikasi booth.
+          Buka foldernya di Drive, lihat URL-nya:
+          <code>drive.google.com/drive/folders/<b>ID-NYA-DI-SINI</b></code>.
+          Pastikan folder di-share <b>“Anyone with the link — Viewer”</b>, kalau tidak
+          galeri tidak bisa membacanya.
+        </span>
+      </div>
     </div>
     <div class="fa"><button class="bp" id="addbtn" onclick="addEvent()">➕ Tambah Event</button></div>
   </div>
@@ -114,38 +164,94 @@
 <div id="toast"></div>
 
 <script>
-// ══════════════════════════════════
+// ──────────────────────────────────────────
 // KONFIGURASI — isi 1 baris ini
-// ══════════════════════════════════
+// ──────────────────────────────────────────
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby1u_AtcGLCfaZMAwyLDmb_G76xxGLENxUQEqkZu4wHhf_KhcCS4NZtuNR-kaWpdAe_pA/exec";
-// ══════════════════════════════════
+// ──────────────────────────────────────────
+//
+// Password TIDAK ditulis di sini. Ia diperiksa oleh Apps Script dan
+// disimpan di Script Properties (ADMIN_PASS), jadi tidak bisa dibaca
+// lewat "view source" halaman ini.
+
+let PASS = "";  // hanya di memori selama tab terbuka
 
 function toast(msg) {
-  const t=document.getElementById("toast");
-  t.textContent=msg; t.classList.add("show");
-  setTimeout(()=>t.classList.remove("show"),2500);
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2800);
 }
 
-function setLoading(id, on) {
-  const el=document.getElementById(id);
-  if(el){el.disabled=on; if(on)el.textContent="⏳ Menyimpan...";}
-}
-
+// Apps Script menolak preflight CORS, jadi kirim sebagai text/plain
 async function api(body) {
   const res = await fetch(SCRIPT_URL, {
     method: "POST",
-    body: JSON.stringify(body)
+    body: JSON.stringify(Object.assign({ pass: PASS }, body))
   });
-  return res.json();
+  const data = await res.json();
+  if (data && data.error) throw new Error(data.error);
+  return data;
 }
 
+// ── Login ──
+async function doLogin() {
+  const val = document.getElementById("lpass").value;
+  const btn = document.getElementById("lbtn");
+  const err = document.getElementById("lerr");
+  if (!val) return;
+  btn.disabled = true; btn.textContent = "⏳ Memeriksa...";
+  err.classList.remove("show");
+  try {
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "verifyPass", pass: val })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      PASS = val;
+      sessionStorage.setItem("cpb_admin", val);
+      document.getElementById("login").classList.add("hide");
+      loadEvents();
+    } else {
+      err.textContent = "Password salah.";
+      err.classList.add("show");
+      document.getElementById("lpass").value = "";
+      document.getElementById("lpass").focus();
+    }
+  } catch (e) {
+    err.textContent = "Gagal menghubungi server: " + e.message;
+    err.classList.add("show");
+  } finally {
+    btn.disabled = false; btn.textContent = "Masuk";
+  }
+}
+
+function doLogout() {
+  PASS = "";
+  sessionStorage.removeItem("cpb_admin");
+  location.reload();
+}
+
+function toggleEye() {
+  const inp = document.getElementById("lpass");
+  const eye = document.getElementById("leye");
+  if (inp.type === "password") { inp.type = "text"; eye.textContent = "🙈"; }
+  else { inp.type = "password"; eye.textContent = "👁"; }
+}
+
+// ── Events ──
 async function loadEvents() {
-  document.getElementById("el").innerHTML = `<div style="text-align:center;padding:32px;color:var(--muted)">⏳ Memuat event...</div>`;
+  document.getElementById("el").innerHTML =
+    `<div style="text-align:center;padding:32px;color:var(--muted)">⏳ Memuat event...</div>`;
   try {
     const data = await (await fetch(`${SCRIPT_URL}?action=getEvents`)).json();
-    renderEvents(data.events || []);
-  } catch(e) {
-    document.getElementById("el").innerHTML = `<div style="color:#e74c3c;padding:20px">⚠️ Gagal memuat: ${e.message}</div>`;
+    const evs = data.events || [];
+    // Terbaru duluan, samakan dengan urutan di galeri
+    evs.sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
+    renderEvents(evs);
+  } catch (e) {
+    document.getElementById("el").innerHTML =
+      `<div style="color:#e74c3c;padding:20px">⚠️ Gagal memuat: ${esc(e.message)}</div>`;
   }
 }
 
@@ -164,14 +270,14 @@ function renderEvents(events) {
     d.innerHTML = `
       <div class="einfo">
         <div class="ename">${esc(ev.name)}</div>
-        <div class="emeta">${ev.date ? '📅 '+esc(ev.date) : '<span style="color:#444">Tanggal tidak diisi</span>'}</div>
+        <div class="emeta">${ev.date ? '📅 ' + esc(ev.date) : '<span style="color:#444">Tanggal tidak diisi</span>'}</div>
         <div class="efold">📁 ${esc(ev.folderId)}</div>
       </div>
       <div class="eact">
-        <button class="tb ${ev.visible?'vis':'hid2'}" onclick="toggleVis('${ev.id}',this)">
-          ${ev.visible ? '👁 Tampil' : '🙈 Tersembunyi'}
+        <button class="tb ${ev.visible ? 'vis' : 'hid2'}" onclick="toggleVis('${ev.id}',this)">
+          ${ev.visible ? '👁 Tampil' : '🚫 Tersembunyi'}
         </button>
-        <button class="eb" onclick="openEdit('${ev.id}','${esc(ev.name)}','${esc(ev.date||'')}','${esc(ev.folderId)}')">✏️</button>
+        <button class="eb" onclick="openEdit('${ev.id}','${esc(ev.name)}','${esc(ev.date || '')}','${esc(ev.folderId)}')">✏️</button>
         <button class="db" onclick="deleteEv('${ev.id}','${esc(ev.name)}',this)">🗑</button>
       </div>`;
     list.appendChild(d);
@@ -179,75 +285,88 @@ function renderEvents(events) {
 }
 
 async function addEvent() {
-  const name=document.getElementById("iname").value.trim();
-  const date=document.getElementById("idate").value.trim();
-  const folderId=document.getElementById("ifolder").value.trim();
-  if(!name){alert("Nama event harus diisi!");return;}
-  if(!folderId){alert("Folder ID harus diisi!");return;}
-  const btn=document.getElementById("addbtn");
-  btn.disabled=true; btn.textContent="⏳ Menyimpan...";
+  const name = document.getElementById("iname").value.trim();
+  const date = document.getElementById("idate").value.trim();
+  const folderId = document.getElementById("ifolder").value.trim();
+  if (!name) { alert("Nama event harus diisi!"); return; }
+  if (!folderId) { alert("Folder ID harus diisi!"); return; }
+  const btn = document.getElementById("addbtn");
+  btn.disabled = true; btn.textContent = "⏳ Menyimpan...";
   try {
-    await api({action:"addEvent",name,date,folderId});
-    document.getElementById("iname").value="";
-    document.getElementById("idate").value="";
-    document.getElementById("ifolder").value="";
+    await api({ action: "addEvent", name, date, folderId });
+    document.getElementById("iname").value = "";
+    document.getElementById("idate").value = "";
+    document.getElementById("ifolder").value = "";
     toast("✅ Event berhasil ditambahkan!");
     loadEvents();
-  } catch(e) { toast("❌ Gagal: "+e.message); }
-  finally { btn.disabled=false; btn.textContent="➕ Tambah Event"; }
+  } catch (e) { toast("❌ Gagal: " + e.message); }
+  finally { btn.disabled = false; btn.textContent = "➕ Tambah Event"; }
 }
 
 async function toggleVis(id, btn) {
-  btn.disabled=true;
+  btn.disabled = true;
   try {
-    const res = await api({action:"toggleVisible",id});
-    toast(res.visible ? "👁 Event ditampilkan" : "🙈 Event disembunyikan");
+    const res = await api({ action: "toggleVisible", id });
+    toast(res.visible ? "👁 Event ditampilkan" : "🚫 Event disembunyikan");
     loadEvents();
-  } catch(e) { toast("❌ Gagal: "+e.message); btn.disabled=false; }
+  } catch (e) { toast("❌ Gagal: " + e.message); btn.disabled = false; }
 }
 
 async function deleteEv(id, name, btn) {
-  if(!confirm(`Hapus event "${name}"?`)) return;
-  btn.disabled=true;
+  if (!confirm(`Hapus event "${name}"?\n\nFoto di Drive TIDAK ikut terhapus, hanya hilang dari galeri.`)) return;
+  btn.disabled = true;
   try {
-    await api({action:"deleteEvent",id});
+    await api({ action: "deleteEvent", id });
     toast("🗑 Event dihapus");
     loadEvents();
-  } catch(e) { toast("❌ Gagal: "+e.message); btn.disabled=false; }
+  } catch (e) { toast("❌ Gagal: " + e.message); btn.disabled = false; }
 }
 
 function openEdit(id, name, date, folderId) {
-  document.getElementById("eid").value=id;
-  document.getElementById("ename").value=name;
-  document.getElementById("edate").value=date;
-  document.getElementById("efolder").value=folderId;
+  document.getElementById("eid").value = id;
+  document.getElementById("ename").value = name;
+  document.getElementById("edate").value = date;
+  document.getElementById("efolder").value = folderId;
   document.getElementById("mo").classList.add("open");
 }
 
 async function saveEdit() {
-  const id=document.getElementById("eid").value;
-  const name=document.getElementById("ename").value.trim();
-  const date=document.getElementById("edate").value.trim();
-  const folderId=document.getElementById("efolder").value.trim();
-  if(!name){alert("Nama event harus diisi!");return;}
-  if(!folderId){alert("Folder ID harus diisi!");return;}
-  const btn=document.getElementById("savebtn");
-  btn.disabled=true; btn.textContent="⏳ Menyimpan...";
+  const id = document.getElementById("eid").value;
+  const name = document.getElementById("ename").value.trim();
+  const date = document.getElementById("edate").value.trim();
+  const folderId = document.getElementById("efolder").value.trim();
+  if (!name) { alert("Nama event harus diisi!"); return; }
+  if (!folderId) { alert("Folder ID harus diisi!"); return; }
+  const btn = document.getElementById("savebtn");
+  btn.disabled = true; btn.textContent = "⏳ Menyimpan...";
   try {
-    await api({action:"updateEvent",id,name,date,folderId});
+    await api({ action: "updateEvent", id, name, date, folderId });
     closeModal();
     toast("✅ Event berhasil diupdate!");
     loadEvents();
-  } catch(e) { toast("❌ Gagal: "+e.message); }
-  finally { btn.disabled=false; btn.textContent="💾 Simpan"; }
+  } catch (e) { toast("❌ Gagal: " + e.message); }
+  finally { btn.disabled = false; btn.textContent = "💾 Simpan"; }
 }
 
 function closeModal() { document.getElementById("mo").classList.remove("open"); }
-document.getElementById("mo").addEventListener("click",e=>{if(e.target===document.getElementById("mo"))closeModal()});
-document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
-function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;")}
+document.getElementById("mo").addEventListener("click", e => {
+  if (e.target === document.getElementById("mo")) closeModal();
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+function esc(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
 
-loadEvents();
+// Kalau tab ini sudah pernah login, lanjutkan tanpa mengetik ulang
+(function () {
+  const saved = sessionStorage.getItem("cpb_admin");
+  if (saved) {
+    PASS = saved;
+    document.getElementById("login").classList.add("hide");
+    loadEvents();
+  }
+})();
 </script>
 </body>
 </html>
