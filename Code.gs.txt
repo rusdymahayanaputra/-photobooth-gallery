@@ -1,9 +1,30 @@
 // ================================================================
 // GOOGLE APPS SCRIPT — Photo Booth Backend
 // Paste kode ini di Google Apps Script (script.google.com)
+//
+// PERUBAHAN PENTING dibanding versi lama:
+// Dulu siapa pun yang tahu URL script ini bisa menambah, mengubah,
+// atau MENGHAPUS semua event — tanpa password. URL-nya sendiri
+// terbaca di source code halaman galeri, jadi praktis terbuka untuk umum.
+//
+// Sekarang semua aksi yang mengubah data wajib menyertakan password,
+// dan passwordnya disimpan di Script Properties (tidak ikut ter-copy
+// ke halaman web). Aksi baca (getEvents) tetap terbuka karena galeri
+// memang harus bisa membacanya tanpa login.
+//
+// CARA SET PASSWORD (sekali saja):
+//   1. Di editor Apps Script, klik ikon roda gigi "Project Settings"
+//   2. Scroll ke "Script Properties" → "Add script property"
+//   3. Property : ADMIN_PASS
+//      Value    : (password admin yang kamu mau)
+//   4. Save, lalu Deploy ulang (Deploy > Manage deployments > Edit > Deploy)
 // ================================================================
 
 const SHEET_NAME = "Events";
+
+function getAdminPass() {
+  return PropertiesService.getScriptProperties().getProperty("ADMIN_PASS");
+}
 
 function doGet(e) {
   return handleRequest(e);
@@ -14,24 +35,39 @@ function doPost(e) {
 }
 
 function handleRequest(e) {
-  const action = e.parameter.action || (e.postData ? JSON.parse(e.postData.contents).action : null);
-  
-  let result;
+  var body = {};
+  if (e && e.postData && e.postData.contents) {
+    try { body = JSON.parse(e.postData.contents); } catch (err) { body = {}; }
+  }
+  var action = (e && e.parameter && e.parameter.action) || body.action || null;
+
+  // Aksi yang mengubah data wajib pakai password
+  var writeActions = ["addEvent", "updateEvent", "deleteEvent", "toggleVisible"];
+  var result;
+
   try {
-    if (action === "getEvents") {
+    if (action === "verifyPass") {
+      result = { ok: body.pass === getAdminPass() };
+
+    } else if (writeActions.indexOf(action) !== -1) {
+      var expected = getAdminPass();
+      if (!expected) {
+        result = { error: "ADMIN_PASS belum diset di Script Properties." };
+      } else if (body.pass !== expected) {
+        result = { error: "Password salah." };
+      } else if (action === "addEvent") {
+        result = addEvent(body);
+      } else if (action === "updateEvent") {
+        result = updateEvent(body);
+      } else if (action === "deleteEvent") {
+        result = deleteEvent(body.id);
+      } else {
+        result = toggleVisible(body.id);
+      }
+
+    } else if (action === "getEvents") {
       result = getEvents();
-    } else if (action === "addEvent") {
-      const data = JSON.parse(e.postData.contents);
-      result = addEvent(data);
-    } else if (action === "updateEvent") {
-      const data = JSON.parse(e.postData.contents);
-      result = updateEvent(data);
-    } else if (action === "deleteEvent") {
-      const data = JSON.parse(e.postData.contents);
-      result = deleteEvent(data.id);
-    } else if (action === "toggleVisible") {
-      const data = JSON.parse(e.postData.contents);
-      result = toggleVisible(data.id);
+
     } else {
       result = { error: "Unknown action" };
     }
@@ -58,30 +94,32 @@ function getEvents() {
   const sheet = getSheet();
   const rows = sheet.getDataRange().getValues();
   if (rows.length <= 1) return { events: [] };
-  
-  const events = rows.slice(1).map(row => ({
-    id: String(row[0]),
-    name: row[1],
-    date: row[2],
-    folderId: row[3],
-    visible: row[4] === true || row[4] === "TRUE",
-    createdAt: row[5]
-  }));
-  
-  return { events };
+
+  const events = rows.slice(1).map(function (row) {
+    return {
+      id: String(row[0]),
+      name: row[1],
+      date: row[2],
+      folderId: row[3],
+      visible: row[4] === true || row[4] === "TRUE",
+      createdAt: row[5]
+    };
+  });
+
+  return { events: events };
 }
 
 function addEvent(data) {
   const sheet = getSheet();
   const id = Date.now().toString();
   sheet.appendRow([id, data.name, data.date || "", data.folderId, true, new Date().toISOString()]);
-  return { success: true, id };
+  return { success: true, id: id };
 }
 
 function updateEvent(data) {
   const sheet = getSheet();
   const rows = sheet.getDataRange().getValues();
-  
+
   for (let i = 1; i < rows.length; i++) {
     if (String(rows[i][0]) === String(data.id)) {
       sheet.getRange(i + 1, 2).setValue(data.name);
@@ -96,7 +134,7 @@ function updateEvent(data) {
 function deleteEvent(id) {
   const sheet = getSheet();
   const rows = sheet.getDataRange().getValues();
-  
+
   for (let i = 1; i < rows.length; i++) {
     if (String(rows[i][0]) === String(id)) {
       sheet.deleteRow(i + 1);
@@ -109,7 +147,7 @@ function deleteEvent(id) {
 function toggleVisible(id) {
   const sheet = getSheet();
   const rows = sheet.getDataRange().getValues();
-  
+
   for (let i = 1; i < rows.length; i++) {
     if (String(rows[i][0]) === String(id)) {
       const current = rows[i][4] === true || rows[i][4] === "TRUE";
