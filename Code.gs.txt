@@ -22,7 +22,7 @@ const SHEET_NAME = "Events";
 // ══════════════════════════════════════════════════════════
 //  ⬇⬇⬇  GANTI PASSWORD ADMIN GALERI DI BARIS DI BAWAH INI  ⬇⬇⬇
 // ══════════════════════════════════════════════════════════
-const ADMIN_PASS = "ganti-password-ini";
+const ADMIN_PASS = "admin123";
 // ══════════════════════════════════════════════════════════
 //
 //  Aman ditulis di sini. Berbeda dengan index.html, berkas Code.gs
